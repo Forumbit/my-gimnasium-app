@@ -1,0 +1,308 @@
+<!DOCTYPE html>
+{% load static %}
+<html lang="ru" dir="ltr">
+<head>
+    <meta charset="utf-8">
+    <title>{% block title %}Главная страница{% endblock %}</title>
+    <link rel="stylesheet"
+          href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css"
+          integrity="sha384-9aIt2nRpC12Uk9gS9baDl411NQApFmC26EwAOH8WgZl5MYYxFfc+NcPb1dKGj7Sk"
+          crossorigin="anonymous">
+    <link rel="icon" type="image/png" href="{% static 'image/icon.png' %}" width="24px">
+    <link rel="stylesheet" type="text/css" href="{% static 'style.css' %}">
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"
+            integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj"
+            crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js"
+            integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo"
+            crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.min.js"
+            integrity="sha384-OgVRvuATP1z7JjHLkuOU7Xw704+h835Lr+6QL9UvYjZE3Ipu6Tp75j7Bh/kR0JKI"
+            crossorigin="anonymous"></script>
+</head>
+<body style="background: url({% static "image/background-2.png" %})">
+
+  <!-- ШАПКА -->
+<nav class="navbar navbar-expand-lg navbar-dark" style="background-color:rgba(110, 1, 0, 0.6);backdrop-filter: blur(5px);position:fixed;width:100%;z-index:1;">
+    <img src="{% static 'image/icon.svg' %}" alt="gimnasium icon" width="32px">
+    <a class="navbar-brand pl-3" href="#">Gimnasium</a>
+    <button class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent"
+            aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+    </button>
+
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+        <ul class="navbar-nav mr-auto">
+            <li class="nav-item active">
+                <a class="nav-link" href="{% url 'index_url' %}">Главная</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="/admin/">Админ</a>
+            </li>
+        </ul>
+    </div>
+</nav>
+
+
+<br><br>
+
+<!-- ТЕЛО  -->
+<div class="container" style="background-color: rgba(255,255, 255, 0.6);padding:39px 100px;backdrop-filter: blur(5px);">
+    {% block content %}
+    {% if not request.user.is_authenticated %}
+    <div class="text-center mt-5">
+        <div class="alert alert-danger">
+            Вы не авторизованы. Пожалуйста авторизуйтесь по <a href="/admin/">ссылке</a>.
+        </div>
+    </div>
+    {% endif %}
+    {% if zamena %}
+    <div class="text-center">
+    </div>
+    <h1 class="text-center mt-5 mb-2 ">Замены</h1>
+        <div class="text-center">
+          {% if request.user.is_authenticated %}
+            <a href="{% url 'create_url' %}">
+                <button class="btn btn-lg float-left text-white" style="background:#6E0100;">
+                    Добавить
+                    +
+                </button>
+            </a>
+            <button type="button" class="btn btn-outline-danger btn-lg float-right debug_style"
+                    data-toggle="modal"
+                    data-target="#exampleModal_zamena_all">
+                Удалить все замены
+            </button>
+          {% endif %}
+
+            <!-- Modal -->
+            <div class="modal fade" id="exampleModal_zamena_all" tabindex="-1" role="dialog"
+                 aria-labelledby="exampleModalLabel" aria-hidden="true">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="exampleModalLabel_zamena">Внимание!</h5>
+                            <button type="button" class="close" data-dismiss="modal"
+                                    aria-label="Close">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                        </div>
+                        <div class="modal-body">
+                            Вы точно хотите удалить все замены?
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary"
+                                    data-dismiss="modal">Отмена
+                            </button>
+                            <a href="{% url 'delete_all_url' %}">
+                                <button class="btn btn-danger">
+                                    Удалить
+                                </button>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <br>
+        <table class="table table-striped mt-5 rounded" style="background-color: white;">
+            <thead class="text-center">
+            <tr>
+                <th scope="col">Урок</th>
+                <th scope="col">Предмет</th>
+                <th scope="col">Класс</th>
+                <th scope="col">Кабинет</th>
+                <th scope="col">Действие</th>
+            </tr>
+            </thead>
+            <tbody class="text-center">
+            {% for i in zamena %}
+            <tr>
+                <td style="vertical-align:middle;" class="zamena">{{ i.how_lesson }}</td>
+                <td style="vertical-align:middle;" class="zamena">{{ i.predmet }}</td>
+                <td style="vertical-align:middle;" class="zamena">{{ i.lesson }} "{{ i.letter }}"
+                </td>
+                <td style="vertical-align:middle;" class="zamena">{{ i.cabinet }}</td>
+                <td>
+                  {% if request.user.is_authenticated %}
+                    <a href="{% url 'edit_url' i.pk %}"><button class="btn btn-outline-success debug_style">Изменить</button></a>
+                    <!-- Button trigger modal -->
+                    <button type="button" class="btn btn-outline-danger debug_style"
+                            data-toggle="modal"
+                            data-target="#exampleModal{{i.pk}}">
+                        Удалить
+                    </button>
+                  {% endif %}
+
+                    <!-- Modal -->
+                    <div class="modal fade" id="exampleModal{{i.pk}}" tabindex="-1" role="dialog"
+                         aria-labelledby="exampleModalLabel" aria-hidden="true">
+                        <div class="modal-dialog">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <h5 class="modal-title" id="exampleModalLabel">Внимание!</h5>
+                                    <button type="button" class="close" data-dismiss="modal"
+                                            aria-label="Close">
+                                        <span aria-hidden="true">&times;</span>
+                                    </button>
+                                </div>
+                                <div class="modal-body">
+                                    Вы точно хотите удалить текущую замену?
+                                </div>
+                                <div class="modal-footer">
+                                    <button type="button" class="btn btn-secondary"
+                                            data-dismiss="modal">Отмена
+                                    </button>
+                                    <form action="{% url 'delete_url' i.pk %}" method="post"
+                                          style="display: inline-block;">
+                                        {% csrf_token %}
+                                        <button class="btn btn-danger" type="submit">Удалить
+                                        </button>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </td>
+            </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+        {% elif not zamena %}
+        <div>
+            <h1 class="zamena text-center">Замен нет
+              {% if request.user.is_authenticated %}
+                <a href="{% url 'create_url' %}">
+                    <button class="btn btn-lg text-white" style="background:#6E0100;">
+                        Добавить
+                        +
+                    </button>
+                </a>
+              {% endif %}
+            </h1>
+        </div>
+        {% endif %}
+        <br>
+        <hr>
+        {% if not addit %}
+        <div class="text-center mt-5">
+            <h1 class="additional">
+                Новостей нет
+                {% if request.user.is_authenticated %}
+                  <a href="{% url 'addit_create_url' %}">
+                      <button class="btn btn-lg text-white"
+                              style="background:#6E0100;">
+                          Добавить
+                          +
+                      </button>
+                  </a>
+                {% endif %}
+            </h1>
+
+        </div>
+        {% elif addit %}
+        <div class="text-center">
+            <h1>Новости</h1>
+            {% if request.user.is_authenticated %}
+              <a href="{% url 'addit_create_url' %}">
+                  <button class="btn btn-lg text-white float-left"
+                          style="background:#6E0100;">
+                      Добавить
+                      +
+                  </button>
+              </a>
+              <button type="button" class="btn btn-outline-danger btn-lg float-right debug_style"
+                      data-toggle="modal"
+                      data-target="#exampleModal_addit_all">
+                  Удалить все новости
+              </button>
+            {% endif %}
+            <!-- Modal -->
+            <div class="modal fade" id="exampleModal_addit_all" tabindex="-1" role="dialog"
+                 aria-labelledby="exampleModalLabel" aria-hidden="true">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="exampleModalLabel_addit_all">Внимание!</h5>
+                            <button type="button" class="close" data-dismiss="modal"
+                                    aria-label="Close">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                        </div>
+                        <div class="modal-body">
+                            Вы точно хотите удалить все новости?
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary"
+                                    data-dismiss="modal">Отмена
+                            </button>
+                            <a href="{% url 'delete_all_addit_url' %}">
+                                <button class="btn btn-danger">
+                                    Удалить
+                                </button>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <br>
+        <br><br>
+        {% for i in addit %}
+        <div class="card">
+          <h5 class="card-header">Дата публикации: {{ i.pub_date }}</h5>
+          <div class="card-body">
+            <h5 class="card-title additional">{{ i.title }}</h5>
+            <p class="card-text additional {% if i.was_published_recently %}news{% endif %}">{{ i.description }}</p>
+            {% if request.user.is_authenticated %}
+            <a href="{% url 'addit_update_url' i.pk %}"><button class="btn btn-outline-success debug_style mt-2">Изменить</button></a>
+            <button type="button" class="btn btn-outline-danger debug_style mt-2"
+                    data-toggle="modal"
+                    data-target="#exampleModal_addit{{i.pk}}">
+                Удалить
+            </button>
+            {% endif %}
+          </div>
+        </div>
+        <!-- Modal -->
+        <div class="modal fade" id="exampleModal_addit{{i.pk}}" tabindex="-1"
+             role="dialog"
+             aria-labelledby="exampleModalLabel_addit" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="exampleModalLabel_addit">
+                            Внимание!</h5>
+                        <button type="button" class="close" data-dismiss="modal"
+                                aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        Вы точно хотите удалить текущую новость?
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary"
+                                data-dismiss="modal">Отмена
+                        </button>
+                        <form action="{% url 'addit_delete_url' i.pk %}" method="post"
+                              style="display: inline-block;">
+                            {% csrf_token %}
+                            <button class="btn btn-danger" type="submit">Удалить
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <br>
+        {% endfor %}
+        <br><br><br>
+        {% endif %}
+        {% endblock %}
+
+</div>
+
+</body>
+</html>

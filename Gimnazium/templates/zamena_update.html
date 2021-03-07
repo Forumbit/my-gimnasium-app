@@ -1,0 +1,21 @@
+{% extends 'index.html' %}
+{% block title %}Редактирование замены{% endblock %}
+{% block content %}
+<div class="mt-5 col-5 text-center" style="margin:auto;">
+    <form action="{% url 'edit_url' zamena.pk %}" method="post">
+        {% csrf_token %}
+        {% for field in form %}
+        {% if field.errors %}
+        <div class="alert alert-danger">
+            {{ field.errors }}
+        </div>
+        {% endif %}
+        <font face="Montserrat">
+            {{ field.label }}
+        </font>
+        {{ field }}<br>
+        {% endfor %}
+        <button class="btn btn-success mt-2" type="submit">Обновить</button>
+    </form>
+</div>
+{% endblock %}
