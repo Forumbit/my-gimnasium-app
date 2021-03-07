@@ -1,0 +1,9 @@
+@import url('https://fonts.googleapis.com/css2?family=Montserrat+Alternates&display=swap');
+.debug_style {
+    border: 1px solid #6E0100;
+    color:#6E0100;
+}
+
+* {
+  font-family: 'Montserrat Alternates', sans-serif;
+}
